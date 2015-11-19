@@ -1,0 +1,26 @@
+#!/usr/bin/python
+import cv
+
+cv.NamedWindow("w1", cv.CV_WINDOW_AUTOSIZE)
+
+#SET CAMERA INDEX BELOW
+camera_index = -1 
+
+capture = cv.CreateFileCapture('/home/ilya/src_open_cv/vsplesk.mp4')
+isRunning = True
+firstImage = cv.QueryFrame(capture)
+
+def repeat():
+  global capture #declare as globals since we are assigning to them now
+  global camera_index
+  global isRunning
+  global firstImage
+  c = cv.WaitKey(100) % 0x100
+  currImage = cv.QueryFrame(capture) 
+  cv.ShowImage("w1",firstImage)
+
+  if(c==27):
+    isRunning = False
+
+while isRunning:
+    repeat()

@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+import cv2
+import video
+import sys
+
+if __name__ == '__main__':
+    print __doc__
+
+    try:
+        fn = "/root/v/28.avi"
+    except:
+        fn = 0
+
+    def nothing(*arg):
+        pass
+
+    cv2.namedWindow('edge')
+
+    cap = video.create_capture(fn)
+    mser = cv2.MSER()
+    myFile = open('result.dat', 'w')
+    while True:
+        flag, img = cap.read()
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        thrs1 = 1600
+        thrs2 = 500
+        edge = cv2.Canny(gray, thrs1, thrs2, apertureSize=5)
+        vis = img.copy()
+        vis /= 2
+        vis[edge != 0] = (0, 255, 0)
+        moments = cv2.moments(img)
+        print moments
+
+        try:
+           _,contours0, hierarchy = cv2.findContours( edge.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+           contours = [cv2.approxPolyDP(cnt, 3, True) for cnt in contours0]
+           a=cv2.contourArea(contours)
+           print a
+#           myFile.write(a)					
+#           levels=0
+#           cv2.drawContours( vis, contours, (-1, 3)[levels <= 0], (128,255,255),3,cv2.LINE_AA,hierarchy,abs(levels))
+#        cv2.fitEllipse(vis)
+        except:
+             pass
+#            print("error fitEllipse")    
+
+#        try:
+#            a=cv2.contourArea(edge)
+#            cv.approxPolyDP(edge, approx, 5, true);
+#            a=cv2.contourArea(approx);
+#            myFile.write(a)
+#            print a
+#        except:
+#            pass
+
+        cv2.imshow('edge', edge)
+        ch = cv2.waitKey(5)
+        if ch == 27:
+            break
+
+    
+    myFile.close()
+    cv2.destroyAllWindows()
+
